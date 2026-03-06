@@ -112,7 +112,7 @@ namespace Slay_The_Prof.Controller
             else
             { 
                 // Simplified Enemy AI using your new Switch logic
-                if (new Random().Next(1, 101) <= 100 && enemy.StartingDeck.Count > 0)
+                if (new Random().Next(1, 101) <= 50 && enemy.StartingDeck.Count > 0)
                 {
                     
                     if (skillCard.CardType == "Attack")
