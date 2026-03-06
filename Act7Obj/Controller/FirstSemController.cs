@@ -12,6 +12,8 @@ namespace Slay_The_Prof.Controller
     {
         public static void ClassBattle1(Player player, Enemy enemy, CardManagerController deck)
         {
+
+
             BattleController.ApplyPassiveEffect(player, enemy);
             deck.DrawCards(4);
             int turnCounter = 1;
@@ -36,11 +38,35 @@ namespace Slay_The_Prof.Controller
 
             if (enemy.Health <= 0) BattleController.EndBattleIfWinThenSaveProgress(player, enemy);
         }
-
+        private static void ProvidesArmorToPlayer(Player player, CardModel card)
+        {
+            if (card.Armor > 0)
+            {
+                player.CurrentArmor += card.Armor;
+                Console.Write($"\nPlayer gained {card.Armor} Armor!");
+            }
+        }
+        private static void ProvidesArmorToEnemy(Enemy enemy, CardModel card)
+        {
+            if (card.Armor > 0)
+            {
+                enemy.CurrentArmor += card.Armor;
+                Console.WriteLine($"\n{enemy.EnemyName} gained {card.Armor} Armor!");
+            }
+        }
+        public static void DrawCardsIfPlayed(CardManagerController deck, CardModel card)
+        {
+            if (card.DrawAmount > 0)
+            {
+                deck.DrawCards(card.DrawAmount); // Draw the specific amount
+                Console.WriteLine($"\nPlayer Drew {card.DrawAmount} extra cards!");
+            }
+        }
         private static void ExecutePlayerTurn(Player player, Enemy enemy, CardManagerController deck, int turnCounter)
         {
             int currentEnergy = 3;
             bool playerTurnActive = true;
+
 
             while (playerTurnActive)
             {
@@ -52,7 +78,12 @@ namespace Slay_The_Prof.Controller
                 Console.Write("\nAction: ");
                 string input = Console.ReadLine()!.ToUpper();
 
-                if (input == "0") { playerTurnActive = false; continue; }
+                if (input == "0") 
+                { 
+                    playerTurnActive = false;
+                    deck.ClearHandForNextTurn();
+                    continue; 
+                }
                 if (HandleMenuInputs(input, player, enemy)) continue;
 
                 if (int.TryParse(input, out int choice) && choice > 0 && choice <= deck.Hand.Count)
@@ -61,23 +92,29 @@ namespace Slay_The_Prof.Controller
 
                     // If Player is Missed or Feared, restrict them from playing Attack cards
                     if (IsPlayerRestricted(player, card)) continue;
-
+                    
+                    //Check if player have energy
                     if (currentEnergy >= card.EnergyCost)
                     {
-                        int damageDealt = ProcessCardPlayToPlayer(card, player, enemy);
+                        // Add Armor 
+                        ProvidesArmorToPlayer(player, card);
+
+                        int damageDealt = ProcessCardDamageToPlayer(card, player, enemy);
 
                         if (card.CardType == "Attack")
                         {
                             BattleController.ProcessAttackEffects(player.ActiveEffects, player);
-                        }
+                        }                    
+                        currentEnergy -= card.EnergyCost;
+                        deck.Hand.RemoveAt(choice - 1);
+                        deck.DiscardPile.Add(card);
+
+                        // Draw Cards after removing the play card
+                        DrawCardsIfPlayed(deck, card);
 
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine($"\nYou played {card.Name} that deals {damageDealt} damage!");
                         Console.ResetColor();
-                        
-                        currentEnergy -= card.EnergyCost;
-                        deck.DiscardPile.Add(card);
-                        deck.Hand.RemoveAt(choice - 1);
                     }
                     else { 
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -94,7 +131,6 @@ namespace Slay_The_Prof.Controller
             BattleController.ProcessActiveSkillEffects(player.ActiveEffects, player);
             BattleController.TickDurations(player.ActiveEffects);
         }
-
         private static void ExecuteEnemyTurn(Player player, Enemy enemy)
         {
             var skillCard = enemy.StartingDeck[new Random().Next(enemy.StartingDeck.Count)];
@@ -114,10 +150,12 @@ namespace Slay_The_Prof.Controller
                 // Simplified Enemy AI using your new Switch logic
                 if (new Random().Next(1, 101) <= 50 && enemy.StartingDeck.Count > 0)
                 {
-                    
+                    // Add Armor
+                    ProvidesArmorToEnemy(enemy, skillCard);
+
                     if (skillCard.CardType == "Attack")
                     {
-                        int damageDealt = ProcessCardPlayToEnemy(skillCard, player, enemy);
+                        int damageDealt = ProcessCardDamageToEnemy(skillCard, player, enemy);
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine($"\nEnemy played {skillCard.Name} that deals {damageDealt}!");
                         Console.ResetColor();
@@ -131,7 +169,8 @@ namespace Slay_The_Prof.Controller
                 }
                 else
                 {
-                    player.Health -= enemy.AttackDamage;
+                    int damageToPlayer = enemy.AttackDamage;
+                    player.TakeDamage(damageToPlayer);
                     Console.WriteLine($"{enemy.EnemyName} deals {enemy.AttackDamage} damage!");
                 }
             }
@@ -140,7 +179,6 @@ namespace Slay_The_Prof.Controller
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }
-
         private static bool IsPlayerRestricted(Player player, CardModel card)
         {
             var fear = player.ActiveEffects.Find(e => e.Name == "Fear");
@@ -162,7 +200,7 @@ namespace Slay_The_Prof.Controller
             }
             return false;
         }
-        public static int ProcessCardPlayToEnemy(CardModel card, Player player, Enemy enemy)
+        public static int ProcessCardDamageToEnemy(CardModel card, Player player, Enemy enemy)
         {
             // 1. Get Base Damage (Attack + Card Damage + Attack Boosts)
             int baseDamage = enemy.GetModifiedDamage(card);
@@ -200,12 +238,12 @@ namespace Slay_The_Prof.Controller
             }
 
             // 4. Update Stats and Apply Card Effects
-            player.Health -= finalDamage;
+            player.TakeDamage(finalDamage);
             BattleController.ApplyCardEffect(card, player, enemy, true);
 
             return finalDamage;
         }
-        private static int ProcessCardPlayToPlayer(CardModel card, Player player, Enemy enemy)
+        private static int ProcessCardDamageToPlayer(CardModel card, Player player, Enemy enemy)
         {
             // 1. Get Base Damage (Attack + Card Damage + Attack Boosts)
             int baseDamage = player.GetModifiedDamage(card);
@@ -243,7 +281,7 @@ namespace Slay_The_Prof.Controller
             }
 
             // 4. Update Stats and Apply Card Effects
-            enemy.Health -= finalDamage;
+            enemy.TakeDamage(finalDamage);
             BattleController.ApplyCardEffect(card, player, enemy, true);
 
             return finalDamage;
@@ -254,11 +292,13 @@ namespace Slay_The_Prof.Controller
             StagesInterfaceView.DrawHealthBar(player.Health, player.MaxHealth, ConsoleColor.Green);
             BattleController.ShowStatusPassives(player.PassiveEffects);
             BattleController.ShowStatusIcons(player.ActiveEffects);
+            BattleController.ShowArmorStatusForPlayer(player);
 
             Console.WriteLine($"\n  {enemy.EnemyName} (LV.{enemy.EnemyLevel})");
             StagesInterfaceView.DrawHealthBar(enemy.Health, enemy.MaxHealth, ConsoleColor.Red);
             BattleController.ShowStatusPassives(enemy.PassiveEffects);
             BattleController.ShowStatusIcons(enemy.ActiveEffects);
+            BattleController.ShowArmorStatusForEnemy(enemy);
             Console.WriteLine("==================================================");
         }
         private static void DisplayHand(CardManagerController deck)
@@ -285,8 +325,7 @@ namespace Slay_The_Prof.Controller
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine($"* {card.Name}({card.CardType}):");
                         Console.ResetColor();
-                        Console.WriteLine($"  {player.SkillDescriptions[i]}\n");
-
+                        Console.WriteLine($"  {card.CardDescription}\n");
 
                     }
                     Console.WriteLine("Press any key to return...");
@@ -336,17 +375,11 @@ namespace Slay_The_Prof.Controller
                     for (int i = 0; i < enemy.StartingDeck.Count; i++)
                     {
                         var card = enemy.StartingDeck[i];
-
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine($"▸ {card.Name}({card.CardType})");
+                        Console.WriteLine($"* {card.Name}({card.CardType})");
                         Console.ResetColor();
-
-                        // Check if descriptions exist to prevent crashes
-                        string desc = (enemy.SkillDescriptions != null && i < enemy.SkillDescriptions.Count)
-                            ? enemy.SkillDescriptions[i]
-                            : "No description available for this professor's move.";
-
-                        Console.WriteLine($"  {desc}\n");
+                        Console.WriteLine($"  {card.CardDescription}\n");
+                      
                     }
 
                     Console.WriteLine("Press any key to return to battle...");

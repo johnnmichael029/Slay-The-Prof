@@ -13,7 +13,7 @@ namespace Slay_The_Prof.Model
         public int CritChance { get; set; }
         public int CritDamage { get; set; }
         public int Speed { get; set; }
-        public int Intelect { get; set; }
+        public int IntelLect { get; set; }
 
         // Skills
         public List<string> SkillNames { get; set; } = new List<string>();
@@ -32,16 +32,25 @@ namespace Slay_The_Prof.Model
             double rawDamage = 0;
 
             // 1. Determine Raw Base
-            if (card.CardType == "Attack")
+            if (card.CardType == "Attack" && card.Multiplier <= 0)
                 rawDamage = this.AttackDamage + card.BaseDamage;
+            else if (card.CardType == "Attack" && card.Multiplier > 0)
+            {
+                rawDamage = this.AttackDamage * card.Multiplier;
+            }
+             else if (card.CardType == "Skill" & card.BaseDamage > 0)
+            {
+                rawDamage = this.AttackDamage + card.BaseDamage;
+            }
             else if (card.CardType == "Skill")
             {
                 if (card.Multiplier <= 0) return 0;
                 rawDamage = this.AttackDamage * card.Multiplier;
             }
+           
 
-            // 2. STACKING LOGIC: Sum up EVERY boost
-            double totalBonus = 0;
+                // 2. STACKING LOGIC: Sum up EVERY boost
+                double totalBonus = 0;
 
             // Sum every "Attack Boost" in ActiveEffects (Cough + Sleep Mode)
             foreach (var effect in this.ActiveEffects)

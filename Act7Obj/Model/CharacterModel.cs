@@ -10,6 +10,7 @@ namespace Act7Obj.Model
         public string CharacterName { get; set; }
         public string CharacterType { get; set; }
         public int PlayerLevel { get; set; }
+        public int CurrentExp { get; set; }
         public int PlayerGold { get; set; }
         public string CharacterDescription { get; set; }
         public List<CardModel> StartingDeck { get; set; } = new List<CardModel>();

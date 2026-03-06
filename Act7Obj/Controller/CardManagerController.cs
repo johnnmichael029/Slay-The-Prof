@@ -33,8 +33,8 @@ namespace Slay_The_Prof.Controller
         public void DrawCards(int count)
         {
             // Move current hand to discard before drawing new ones
-            DiscardPile.AddRange(Hand);
-            Hand.Clear();
+            //DiscardPile.AddRange(Hand);
+            //Hand.Clear();
 
             for (int i = 0; i < count; i++)
             {
@@ -52,6 +52,11 @@ namespace Slay_The_Prof.Controller
                     DrawPile.RemoveAt(0);
                 }
             }
+        }
+        public void ClearHandForNextTurn()
+        {
+            DiscardPile.AddRange(Hand);
+            Hand.Clear();
         }
     }
 }

@@ -121,5 +121,6 @@ namespace Slay_The_Prof.View
             Console.Write(new string('░', Math.Max(0, barWidth - filled)));
             Console.WriteLine($"] {current}/{max}");
         }
+
     }
 }

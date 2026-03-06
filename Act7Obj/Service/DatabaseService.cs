@@ -21,6 +21,7 @@ namespace Slay_The_Prof.Service
                 PlayerID INTEGER PRIMARY KEY AUTOINCREMENT,
                 PlayerName TEXT NOT NULL UNIQUE,
                 PlayerLevel INTEGER,
+                CurrentExp INTEGER DEFAULT 0,
                 PlayerGold INTEGER,
                 CharacterName TEXT,
                 CharacterDescription TEXT,
@@ -63,12 +64,33 @@ namespace Slay_The_Prof.Service
             connection.Open();
 
             using var command = connection.CreateCommand();
-            command.CommandText = @"
-            INSERT OR REPLACE INTO PlayerData (PlayerName, PlayerLevel, PlayerGold, CharacterName, CharacterDescription, CharacterType, CurrentHealth, MaxHealth, AttackDamage, CritChance, CritDamage, Intelect, Speed)
-            VALUES ($playerName, $playerLevel, $playerGold, $characterName, $characterDescription, $characterType, $currentHealth, $maxHealth, $attackDamage, $critChance, $critDamage, $intelect, $speed);";
-    
+
+            // Use NULL for PlayerID if it's a new player (ID 0) to trigger Auto-Increment
+            string idValue = player.PlayerID == 0 ? "NULL" : "$playerId";
+
+            command.CommandText = $@"
+            INSERT OR REPLACE INTO PlayerData (
+                PlayerID, PlayerName, PlayerLevel, CurrentExp, PlayerGold, 
+                CharacterName, CharacterDescription, CharacterType, 
+                CurrentHealth, MaxHealth, AttackDamage, CritChance, 
+                CritDamage, Intelect, Speed
+            )
+            VALUES (
+                {idValue}, $playerName, $playerLevel, $currentExp, $playerGold, 
+                $characterName, $characterDescription, $characterType, 
+                $currentHealth, $maxHealth, $attackDamage, $critChance, 
+                $critDamage, $intelect, $speed
+            );";
+
+            if (player.PlayerID != 0)
+            {
+                command.Parameters.AddWithValue("$playerId", player.PlayerID);
+            }
+
+            command.Parameters.AddWithValue("$playerId", player.PlayerID);
             command.Parameters.AddWithValue("$playerName", player.PlayerName);
             command.Parameters.AddWithValue("$playerLevel", player.PlayerLevel);
+            command.Parameters.AddWithValue("$currentExp", player.CurrentExp);
             command.Parameters.AddWithValue("$playerGold", player.PlayerGold);
             command.Parameters.AddWithValue("$characterName", player.CharacterName ?? "");
             command.Parameters.AddWithValue("$characterDescription", player.CharacterDescription ?? "");
@@ -78,7 +100,7 @@ namespace Slay_The_Prof.Service
             command.Parameters.AddWithValue("$attackDamage", player.AttackDamage);
             command.Parameters.AddWithValue("$critChance", player.CritChance);
             command.Parameters.AddWithValue("$critDamage", player.CritDamage);
-            command.Parameters.AddWithValue("$intelect", player.Intelect);
+            command.Parameters.AddWithValue("$intelect", player.IntelLect);
             command.Parameters.AddWithValue("$speed", player.Speed);
 
             // FIX: Execute only ONCE to prevent the crash in image_e43a83
@@ -199,7 +221,7 @@ namespace Slay_The_Prof.Service
             command.Parameters.AddWithValue("$attackDamage", enemy.AttackDamage);
             command.Parameters.AddWithValue("$critChance", enemy.CritChance);
             command.Parameters.AddWithValue("$critDamage", enemy.CritDamage);
-            command.Parameters.AddWithValue("$intelect", enemy.Intelect);
+            command.Parameters.AddWithValue("$intelect", enemy.IntelLect);
             command.Parameters.AddWithValue("$speed", enemy.Speed);
 
             // FIX: Execute only ONCE to prevent the crash in image_e43a83
@@ -311,6 +333,7 @@ namespace Slay_The_Prof.Service
                 {
                     PlayerName = reader.GetString(reader.GetOrdinal("PlayerName")),
                     PlayerLevel = reader.GetInt32(reader.GetOrdinal("PlayerLevel")),
+                    CurrentExp = reader.GetInt32(reader.GetOrdinal("CurrentExp")),
                     PlayerGold = reader.GetInt32(reader.GetOrdinal("PlayerGold")),
                     CharacterName = reader.GetString(reader.GetOrdinal("CharacterName")),
                     CharacterDescription = reader.GetString(reader.GetOrdinal("CharacterDescription")),
@@ -320,7 +343,7 @@ namespace Slay_The_Prof.Service
                     AttackDamage = reader.GetInt32(reader.GetOrdinal("AttackDamage")),
                     CritChance = reader.GetInt32(reader.GetOrdinal("CritChance")),
                     CritDamage = reader.GetInt32(reader.GetOrdinal("CritDamage")),
-                    Intelect = reader.GetInt32(reader.GetOrdinal("Intelect")),
+                    IntelLect = reader.GetInt32(reader.GetOrdinal("Intelect")),
                     Speed = reader.GetInt32(reader.GetOrdinal("Speed"))
                 };
 

@@ -12,7 +12,8 @@ namespace Slay_The_Prof.Controller
         public static void SaveEnemyData(Enemy enemy)
         {
 
-            enemy.EnemyName = enemy.EnemyName;
+            enemy.EnemyName = enemy.EnemyName;         
+            enemy.SkillDescriptions = enemy.StartingDeck.ConvertAll(card => card.CardDescription);
             DatabaseService.SaveEnemyData(enemy);
             Console.WriteLine("Saving enemy data...");
             Console.WriteLine("Succesfully saved enemy data!");

@@ -13,5 +13,8 @@ namespace Slay_The_Prof.Model
         public double Multiplier { get; set; }
         public int EnergyCost { get; set; }
         public string CardType { get; set; } // "Attack", "Skill", "Power"
+        public string CardDescription { get; set; }
+        public int Armor {  get; set; }
+        public int DrawAmount { get; set; }
     }
 }

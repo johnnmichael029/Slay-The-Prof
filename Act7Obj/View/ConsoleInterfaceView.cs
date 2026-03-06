@@ -88,6 +88,7 @@ namespace Act7Obj.View
             Console.WriteLine($"   HERO: {character.CharacterName.ToUpper()} ({character.CharacterType})");
             Console.WriteLine($"   GOLD: {character.PlayerGold}");
             Console.WriteLine($"   LEVEL: {character.PlayerLevel}");
+            Console.WriteLine($"   CurrentExp: {player.CurrentExp}");
             Console.ResetColor();
             Console.WriteLine("╚════════════════════════════════════════════════╝");
 
@@ -101,7 +102,7 @@ namespace Act7Obj.View
 
             // Attribute Grid
             Console.WriteLine($" {"ATTACK:",-15} {character.AttackDamage,-10} {"SPEED:",-10} {character.Speed}");
-            Console.WriteLine($" {"INTELECT:",-15} {character.Intelect,-10}");
+            Console.WriteLine($" {"INTELLECT:",-15} {character.IntelLect,-10}");
 
             Console.WriteLine("──────────────────────────────────────────────────");
 
@@ -154,7 +155,6 @@ namespace Act7Obj.View
                 return new Player { PlayerName = playerName };
             }
         }
-
         public static PlayerCharacterModel? DisplayCharacterSelection()
         {
             while (true) 
@@ -227,7 +227,7 @@ namespace Act7Obj.View
             // Primary Stats
             Console.WriteLine($" {"ATTACK:",-15} {hero.AttackDamage}");
             Console.WriteLine($" {"SPEED:",-15} {hero.Speed}");
-            Console.WriteLine($" {"INTELECT:",-15} {hero.Intelect}");
+            Console.WriteLine($" {"INTELLECT:",-15} {hero.IntelLect}");
 
             Console.WriteLine("--------------------------------------------------");
 

@@ -17,7 +17,7 @@ namespace Act7Obj.Model
             AttackDamage = 20;
             CritChance = 3;
             CritDamage = 20;
-            Intelect = 15; 
+            IntelLect = 15; 
             Speed = 20;
         }
     }

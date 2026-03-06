@@ -1,4 +1,5 @@
-﻿using Act7Obj.Model;
+﻿using Act7Obj.Controller;
+using Act7Obj.Model;
 using Slay_The_Prof.Model;
 using Slay_The_Prof.Model.BuffAndDebuffModel;
 using Slay_The_Prof.Service;
@@ -16,7 +17,7 @@ namespace Slay_The_Prof.Controller
         {
             FirstSemController.ClassBattle1(player, enemy, deck);
         }
-        public static void ApplyPassiveEffect(Player player, Enemy enemy) 
+        public static void ApplyPassiveEffect(Player player, Enemy enemy)
         {
             player.PassiveEffects.Add(new EagleEye());
             enemy.PassiveEffects.Add(new Pandekeso());
@@ -70,12 +71,11 @@ namespace Slay_The_Prof.Controller
                 "Attack Boost" => new AttackBoost { Duration = duration },
                 "Morale" => new Morale { Duration = duration },
                 "Missed" => new Missed { Duration = duration },
-                "Fear" => new Fear { Duration = duration},
+                "Fear" => new Fear { Duration = duration },
                 "Bleed" => new Bleed { Duration = duration },
                 _ => null
             };
         }
-
         // NEW: Status Effect Processor
         public static void ProcessActiveSkillEffects(List<StatusEffectModel> effects, BaseCharacterModel target)
         {
@@ -124,7 +124,7 @@ namespace Slay_The_Prof.Controller
                     if (target.Health > target.MaxHealth) target.Health = target.MaxHealth;
 
                     Console.WriteLine($"Target regenerated {regenAmount} Health!");
-                }              
+                }
             }
         }
 
@@ -156,7 +156,6 @@ namespace Slay_The_Prof.Controller
                 }
             }
         }
-
 
         // Passive Effect Proccessor
         //public static void ProccessPassiveEffect(List<PassiveEffectModel> effects, BaseCharacterModel target)
@@ -201,15 +200,63 @@ namespace Slay_The_Prof.Controller
             Console.ResetColor();
             Console.WriteLine();
         }
+        public static void ShowArmorStatusForPlayer(Player player)
+        {
+            if (player.CurrentArmor == 0) return;
+            Console.WriteLine($"  ARMOR: {player.CurrentArmor}");
+        }
+        public static void ShowArmorStatusForEnemy(Enemy enemy)
+        {
+            if (enemy.CurrentArmor == 0) return;
+            Console.WriteLine($"  ARMOR: {enemy.CurrentArmor}");
+        }
         public static void EndBattleIfWinThenSaveProgress(Player player, Enemy enemy)
         {
-            // Add Rewards
-            player.PlayerGold += 50;
-            Slay_The_Prof.Service.DatabaseService.SavePlayerData(player);
+            Console.Clear();
+            TextMoveInUIController.CenterText($"--- {enemy.EnemyName} DEFEATED ---");
 
-            Console.WriteLine($"{enemy.EnemyName} DEFEATED");
-            Console.WriteLine("Progress Auto-Saved. Returning to campus...");
+            // 1. ADD REWARDS
+            player.PlayerGold += 50;
+            int expGained = 100; // Base EXP for winning
+            player.CurrentExp += expGained;
+            TextMoveInUIController.CenterText($"Gained 50 Gold and {expGained} EXP!");
+
+            // 2. CHECK FOR LEVEL UP
+            // Formula: Level 1 needs 50, Level 2 needs 100, etc.
+            CheckForLevelUp(player);
+
+            // 4. CARD REWARD SYSTEM
+            RewardController.GiveCardReward(player);
+
+            // 5. SAVE DATA
+            Slay_The_Prof.Service.DatabaseService.SavePlayerData(player);
+            Console.WriteLine("\nProgress Auto-Saved. Returning to campus...");
             Console.ReadKey();
+        }
+        public static void CheckForLevelUp(Player player)
+        {
+            int expNeeded = player.PlayerLevel * 50; // Your scaling formula
+
+            while (player.CurrentExp >= expNeeded)
+            {
+                player.CurrentExp -= expNeeded;
+                player.PlayerLevel++;
+
+                // 3. SCALE STATS 
+                player.Health += 10; // Heal on level up
+                player.AttackDamage += 2;
+                player.IntelLect += 1;
+                player.Speed += 1;
+
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                TextMoveInUIController.CenterText($"LEVEL UP! You are now Level {player.PlayerLevel}!");
+                TextMoveInUIController.CenterText($"Stats Increased: +10 HP, +2 ATK, +1 INT, +1 SPD");
+                Console.ResetColor();
+
+                // Recalculate for next level
+                expNeeded = player.PlayerLevel * 50;
+            }
         }
         public static void EndBattleIfLoseThenSaveProgress(Player player)
         {
@@ -226,6 +273,7 @@ namespace Slay_The_Prof.Controller
             Console.WriteLine("\nReturning to campus (Main Menu)...");
             Console.ReadKey();
         }
+
        
     }
 }
