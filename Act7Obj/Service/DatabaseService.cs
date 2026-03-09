@@ -21,8 +21,10 @@ namespace Slay_The_Prof.Service
                 PlayerID INTEGER PRIMARY KEY AUTOINCREMENT,
                 PlayerName TEXT NOT NULL UNIQUE,
                 PlayerLevel INTEGER,
-                CurrentExp INTEGER DEFAULT 0,
                 PlayerGold INTEGER,
+                CurrentStage INTEGER DEFAULT 0,
+                ClassBattle INTEGER DEFAULT 0,
+                CurrentExp INTEGER DEFAULT 0,
                 CharacterName TEXT,
                 CharacterDescription TEXT,
                 CharacterType TEXT,
@@ -73,13 +75,13 @@ namespace Slay_The_Prof.Service
                 PlayerID, PlayerName, PlayerLevel, CurrentExp, PlayerGold, 
                 CharacterName, CharacterDescription, CharacterType, 
                 CurrentHealth, MaxHealth, AttackDamage, CritChance, 
-                CritDamage, Intelect, Speed
+                CritDamage, Intelect, Speed, CurrentStage, ClassBattle
             )
             VALUES (
                 {idValue}, $playerName, $playerLevel, $currentExp, $playerGold, 
                 $characterName, $characterDescription, $characterType, 
                 $currentHealth, $maxHealth, $attackDamage, $critChance, 
-                $critDamage, $intelect, $speed
+                $critDamage, $intelect, $speed, $currentStage, $classBattle
             );";
 
             if (player.PlayerID != 0)
@@ -102,6 +104,8 @@ namespace Slay_The_Prof.Service
             command.Parameters.AddWithValue("$critDamage", player.CritDamage);
             command.Parameters.AddWithValue("$intelect", player.IntelLect);
             command.Parameters.AddWithValue("$speed", player.Speed);
+            command.Parameters.AddWithValue("$currentStage", player.CurrentStage);
+            command.Parameters.AddWithValue("$classBattle", player.ClassBattle);
 
             // FIX: Execute only ONCE to prevent the crash in image_e43a83
             command.ExecuteNonQuery();
@@ -317,14 +321,14 @@ namespace Slay_The_Prof.Service
             }
             return names;
         }
-        public static Player? LoadPlayerData(string name)
+        public static Player? LoadPlayerData(string playerName)
         {
             using var connection = new SqliteConnection("Data Source=SlayTheProf.db");
             connection.Open();
 
             using var command = connection.CreateCommand();
             command.CommandText = "SELECT * FROM PlayerData WHERE PlayerName = $name";
-            command.Parameters.AddWithValue("$name", name);
+            command.Parameters.AddWithValue("$name", playerName);
 
             using var reader = command.ExecuteReader();
             if (reader.Read())
@@ -344,7 +348,9 @@ namespace Slay_The_Prof.Service
                     CritChance = reader.GetInt32(reader.GetOrdinal("CritChance")),
                     CritDamage = reader.GetInt32(reader.GetOrdinal("CritDamage")),
                     IntelLect = reader.GetInt32(reader.GetOrdinal("Intelect")),
-                    Speed = reader.GetInt32(reader.GetOrdinal("Speed"))
+                    Speed = reader.GetInt32(reader.GetOrdinal("Speed")),
+                    CurrentStage = reader.GetInt32(reader.GetOrdinal("CurrentStage")),
+                    ClassBattle = reader.GetInt32(reader.GetOrdinal("ClassBattle"))
                 };
 
                 long playerId = reader.GetInt64(reader.GetOrdinal("PlayerID"));

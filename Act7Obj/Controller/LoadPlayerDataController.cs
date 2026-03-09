@@ -3,6 +3,7 @@ using Act7Obj.Model;
 using Act7Obj.View;
 using Slay_The_Prof.Service;
 using Slay_The_Prof.View;
+using Slay_The_Prof.Model.CharacterModel;
 using System;
 using System.Collections.Generic;
 using System.Text;

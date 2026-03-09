@@ -36,8 +36,12 @@ namespace Act7Obj.Controller
                             {
                                 return continuedPlayer; // Start the game with the loaded player
                             }
+                            break;
                         }
-                        NoSaveDataView.NoSaveGameData();
+                        else
+                        {
+                            NoSaveDataView.NoSaveGameData();
+                        }
                         break;
 
                     case "3":

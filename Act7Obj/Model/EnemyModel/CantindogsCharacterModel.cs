@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Slay_The_Prof.Model
+namespace Slay_The_Prof.Model.EnemyModel
 {
     public class CantindogsCharacterModel : Enemy
     {
@@ -11,10 +11,10 @@ namespace Slay_The_Prof.Model
         {
                 EnemyName = "Cantindogs";
                 EnemyDescription = "Full Stack Dev";             
-                EnemyLevel = "3";
+                EnemyLevel = "2";
                 EnemyType = "Coder";
-                Health = 80;
-                MaxHealth = 80;
+                Health = 100;
+                MaxHealth = 100;
                 AttackDamage = 10; 
                 CritChance = 15;
                 CritDamage = 25;
@@ -25,7 +25,6 @@ namespace Slay_The_Prof.Model
                 { 
                     Name = "Notepad++", 
                     BaseDamage = 10, 
-                    Multiplier = 0, 
                     CardType = "Attack",
                     CardDescription = "Force the class to write code in a basic Notepad. You lose 10 Damage due to missing a single semicolon. [EXHAUSTED]"
                 });
@@ -33,11 +32,10 @@ namespace Slay_The_Prof.Model
                 StartingDeck.Add(new CardModel 
                 { 
                     Name = "Silent Mode", 
-                    Multiplier = 0, 
                     CardType = "Skill", 
                     AddedStatuses = ["Fear"], 
                     StatusDuration = 2,
-                    CardDescription = "The Professor falls into a terrifying silence due to class noise. You are struck with Fear and cannot use Attack Skills for 2 turns."
+                    CardDescription = "The Professor falls into a terrifying silence due to class noise. You are struck with Fear and cannot use Attack Cards for 2 turns."
                 });
 
                 StartingDeck.Add(new CardModel 
@@ -52,7 +50,7 @@ namespace Slay_The_Prof.Model
 
                 PassiveSkills.Add("Pandekeso");
                 PassiveDescriptions.Add("Every class, the Professor orders pandekeso to regenerate his energy from the stress of teaching. He now restores 5% of his max health at the end of his turn.");
-
+                
 
         }
     }

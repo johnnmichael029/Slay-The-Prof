@@ -1,10 +1,11 @@
-﻿using Act7Obj.View;
+﻿using Act7Obj.Model;
+using Act7Obj.View;
 using Slay_The_Prof.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Act7Obj.Model
+namespace Slay_The_Prof.Model.CharacterModel
 {
     public class Aristain : PlayerCharacterModel
     {
@@ -18,9 +19,9 @@ namespace Act7Obj.Model
             CharacterDescription = "Aristain is a skilled archer with a calm demeanor. He excels at long-range combat and has a keen eye for precision. His agility allows him to dodge attacks and strike from unexpected angles.";
             Health = 80;
             MaxHealth = 80;
-            AttackDamage = 15;
+            AttackDamage = 10;
             CritChance = 15; 
-            CritDamage = 40;
+            CritDamage = 30;
             IntelLect = 10; 
             Speed = 25;
 
@@ -29,7 +30,7 @@ namespace Act7Obj.Model
                 Name = "Piercing Arrow", 
                 Multiplier = 1.5, 
                 EnergyCost = 1, 
-                CardType = "Skill",
+                CardType = "Attack",
                 CardDescription = "Aristain fires a powerful arrow that pierces through enemies, dealing 150% of his Attack Damage to all enemies in a straight line. Has a 20% chance to apply a bleed effect that deals 5% of the target's max health as damage over 3 turns."
             });
 
@@ -49,7 +50,7 @@ namespace Act7Obj.Model
                 Name = "My Bestfriend", 
                 Multiplier = 2.0, 
                 EnergyCost = 2, 
-                CardType = "Skill", 
+                CardType = "Attack", 
                 CardDescription = "During a strange encounter, Aristain notices Violeta is wearing the same color as him. The entire class laughs so hard it fuels his rage, causing his attack to deal 200% attack damage. [EXHAUSTED]"
             });
 
@@ -72,7 +73,7 @@ namespace Act7Obj.Model
                 CardType = "Skill", 
                 AddedStatuses = ["Missed"], 
                 StatusDuration = 1,
-                CardDescription = "Aristain use this when he wants to go home to skip class. The enemy will not notice him, causing their next attack card type to Missed"
+                CardDescription = "Aristain use this when he wants to go home to skip class. The enemy will not notice him, causing their next attack card type to Missed 1 turn"
             });
 
             StartingDeck.Add(new CardModel
@@ -93,9 +94,9 @@ namespace Act7Obj.Model
                 CardDescription = "Deals 5 damage to enemy"
             });
 
+
             PassiveSkills.Add("Eagle Eye");
             PassiveDescriptions.Add("Aristain's keen eyesight allows him to copy code from his classmates, increasing his Attack Damage by 10%.");    
         }
-
     }
 }

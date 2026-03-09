@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using Slay_The_Prof.Model;
 using Slay_The_Prof.Service;
+using Slay_The_Prof.Model.EnemyModel;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,7 +23,9 @@ namespace Slay_The_Prof.Controller
         {
             List<Enemy> allEnemies = new List<Enemy>
         {
-            new CantindogsCharacterModel()
+            new CantindogsCharacterModel(),
+            new StrangerCharacterModel(),
+            new TrinityCharacterModel()
             // Future enemies 
         };
 

@@ -3,6 +3,7 @@ using Act7Obj.Model;
 using Act7Obj.View;
 using Slay_The_Prof.Model;
 using Slay_The_Prof.Service;
+using Slay_The_Prof.View;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,6 +26,7 @@ namespace Slay_The_Prof.Controller
                 ConsoleInterface.DisplayCreatedMessage();
                 SavePlayerData(myPlayer, selectedHero);
                 TextMoveInUIController.BottomRightPromptContinue();
+                StagesInterfaceView.ShowFirstStagesInterfaces(myPlayer);
             }
         }
 

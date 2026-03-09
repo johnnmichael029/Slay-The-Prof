@@ -2,6 +2,7 @@
 using Act7Obj.Model;
 using Slay_The_Prof.Service;
 using Slay_The_Prof.View;
+using Slay_The_Prof.Model.CharacterModel;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -88,7 +89,9 @@ namespace Act7Obj.View
             Console.WriteLine($"   HERO: {character.CharacterName.ToUpper()} ({character.CharacterType})");
             Console.WriteLine($"   GOLD: {character.PlayerGold}");
             Console.WriteLine($"   LEVEL: {character.PlayerLevel}");
-            Console.WriteLine($"   CurrentExp: {player.CurrentExp}");
+            Console.WriteLine($"   Exp: {player.CurrentExp}");
+            Console.WriteLine($"   STAGE: {player.CurrentStage}");
+            Console.WriteLine($"   BATTLE: {player.ClassBattle}");
             Console.ResetColor();
             Console.WriteLine("╚════════════════════════════════════════════════╝");
 
@@ -96,7 +99,7 @@ namespace Act7Obj.View
             Console.Write(" HP:  ");
 
             // Draw health bar blocks based on Health percentage
-            StagesInterfaceView.DrawHealthBar(character.Health, character.MaxHealth, ConsoleColor.Green);
+            HealthBarView.DrawHealthBar(character.Health, character.MaxHealth, ConsoleColor.Green);
 
             Console.WriteLine("──────────────────────────────────────────────────");
 
@@ -216,7 +219,7 @@ namespace Act7Obj.View
 
             // Health Bar logic (Visual representation)
             Console.Write(" HP:  ");
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.Write($"[{hero.Health}/{hero.MaxHealth}] ".PadRight(15));
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(new string('█', hero.Health / 10)); 

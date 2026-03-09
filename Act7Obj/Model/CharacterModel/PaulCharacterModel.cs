@@ -1,9 +1,10 @@
-﻿using Act7Obj.View;
+﻿using Act7Obj.Model;
+using Act7Obj.View;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Act7Obj.Model
+namespace Slay_The_Prof.Model.CharacterModel
 {
     public class Paul : PlayerCharacterModel
     {

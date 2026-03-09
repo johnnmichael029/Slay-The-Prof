@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Slay_The_Prof.Model.BuffAndDebuffModel
+namespace Slay_The_Prof.Model.BuffAndDebuffModel.Buff
 {
     public class AttackBoost : StatusEffectModel
     {

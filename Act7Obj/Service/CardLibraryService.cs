@@ -11,7 +11,13 @@ namespace Slay_The_Prof.Service
         public static List<CardModel> AllCards = new List<CardModel>
         {
             
-            new() { Name = "Final Exam", CardType = "Attack", EnergyCost = 3, Multiplier = 3.0, CardDescription = "Massive mental assault dealing 300% as attack damage." },
+                new() 
+                { 
+                    Name = "Final Exam", 
+                    CardType = "Attack", 
+                    EnergyCost = 3, 
+                    Multiplier = 3.0, 
+                    CardDescription = "Massive mental assault dealing 300% as attack damage." },
                 new()
                 {
                     Name = "Caffeine Rush",
@@ -39,10 +45,12 @@ namespace Slay_The_Prof.Service
                 },
                 new()
                 {
-                    Name = "All-Nighter",
-                    CardType = "Skill",
-                    EnergyCost = 0,
-                    CardDescription = "Double your next attack damage but lose a turn."
+                    Name = "Asim amoy",
+                    CardType = "Attack",
+                    EnergyCost = 1,
+                    AddedStatuses = ["Poison"],
+                    StatusDuration = 3,
+                    CardDescription = "Violeta releases a stench so bad that he will attack enemey and apply Poison for 3 turns"
                 },
                 new()
                 {
