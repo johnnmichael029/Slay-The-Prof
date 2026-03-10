@@ -21,7 +21,7 @@ namespace Slay_The_Prof.Controller.TraderController
                 Console.Clear();
                 Console.WriteLine("=== BUY ITEMS ===");
                 Console.WriteLine("Buy items to add to your inventory:\n");
-
+                Console.WriteLine($"GOLD: {player.PlayerGold}");
                 for (int i = 0; i < currentItems.Count; i++)
                 {
                     Console.WriteLine($"    [{i + 1}] {currentItems[i].ItemName.PadRight(20)} | {currentItems[i].ItemPrice}");
@@ -232,7 +232,7 @@ namespace Slay_The_Prof.Controller.TraderController
                 new()
                 {
                     ItemName = "Energy Drink",
-                    Description = "A sugar-filled rush. Restores 1 Energy for this turn.",
+                    Description = "A sugar-filled rush. Restores 1 Energy for this turn. Effective next turn.",
                     ItemEffect = ["Energy"],
                     ItemPrice = 60,
                     EffectValue = 1,

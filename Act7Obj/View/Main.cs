@@ -10,7 +10,6 @@ namespace Act7Obj.View
 {
     public class SlayTheProf
     {
-
         public static void Main(string[] args)
         {
             DatabaseService.InitializePlayerDataTable();

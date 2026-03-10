@@ -420,7 +420,11 @@ namespace Slay_The_Prof.Controller
                         Console.ResetColor();
                         break;
                     case "Armor":
-
+                        player.CurrentArmor += selected.EffectValue;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"You used {selected.ItemName} and gained Armor {selected.EffectValue}");
+                        Console.ResetColor();
+                        break;
                     case "Attack Boost":                      
                         if (selected.EffectType == "Buff")
                         {
@@ -431,10 +435,10 @@ namespace Slay_The_Prof.Controller
                         Console.WriteLine($"You used {selected.ItemName} and gained {effect}");
                         Console.ResetColor();                   
                         break;
-                    case "Energy Restore":
-                        // This is just a placeholder. You would need to implement an energy system for this to work.
+                    case "Energy":
+                        player.PlayerEnergy += selected.EffectValue;
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"You used {selected.ItemName} and restored {selected.EffectValue} Energy!");
+                        Console.WriteLine($"You used {selected.ItemName} and gained {selected.EffectValue} Energy!");
                         Console.ResetColor();
                         break; 
                     case "Morale":

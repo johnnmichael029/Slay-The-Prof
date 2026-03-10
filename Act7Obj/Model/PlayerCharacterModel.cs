@@ -14,6 +14,8 @@ namespace Act7Obj.Model
         public int CurrentStage { get; set; }
         public int ClassBattle { get; set; }
 
+        public int PlayerEnergy { get; set; } = 3;
+
         public List<ItemModel> ItemModel { get; set; } = [];
     }
 }

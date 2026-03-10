@@ -143,13 +143,13 @@ namespace Slay_The_Prof.Controller
         private static void ExecutePlayerTurn(Player player, Enemy enemy, CardManagerController deck, int turnCounter)
         {
 
-            int currentEnergy = 3;
+            int currentEnergy = player.PlayerEnergy;
             bool playerTurnActive = true;
 
             while (playerTurnActive)
             {
                 Console.Clear();
-                TurnCounterView.DisplayTurnCounter(currentEnergy, turnCounter);
+                TurnCounterView.DisplayTurnCounter(player, currentEnergy, turnCounter);
                 DisplayBattleStatus(player, enemy);
                 DisplayHand(deck);
 
