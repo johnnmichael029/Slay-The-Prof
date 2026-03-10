@@ -6,6 +6,7 @@ using Slay_The_Prof.Service;
 using Slay_The_Prof.View;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 // ... existing using statements ...
 
@@ -13,8 +14,6 @@ namespace Act7Obj.Controller
 {
     public class UserInputController
     {
-
-
         public static Player? UserInputFunction()
         {
             while (true)
@@ -33,7 +32,7 @@ namespace Act7Obj.Controller
                             // Catch the returned player object here!
                             Player? continuedPlayer = LoadPlayerDataController.LoadPlayerData(names);
                             if (continuedPlayer != null)
-                            {
+                            {                               
                                 return continuedPlayer; // Start the game with the loaded player
                             }
                             break;

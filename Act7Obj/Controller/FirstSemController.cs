@@ -1,6 +1,8 @@
-﻿using Act7Obj.Model;
+﻿using Act7Obj.Controller;
+using Act7Obj.Model;
 using Slay_The_Prof.Model;
 using Slay_The_Prof.Model.BuffAndDebuffModel;
+using Slay_The_Prof.Model.Items;
 using Slay_The_Prof.View;
 using System;
 using System.Collections.Generic;
@@ -10,8 +12,7 @@ using System.Text;
 namespace Slay_The_Prof.Controller
 {
     public class FirstSemController
-    {
-  
+    { 
         public static bool CatindogsBattle1(Player player, Enemy enemy, CardManagerController deck)
         {
             BattleController.ApplyPassiveEffect(player, enemy);
@@ -431,7 +432,7 @@ namespace Slay_The_Prof.Controller
             {
                 Console.WriteLine($"[{i + 1}] {deck.Hand[i].Name} (Energy: {deck.Hand[i].EnergyCost}) ({deck.Hand[i].CardType})");
             }
-            Console.Write("\n[I] Inspect Skills | [P] Inspect Passive | [E] Enemy Intel | [B] Buff and Debuff | [0] End Turn");
+            Console.Write("\n[C] Inspect Cards | [P] Inspect Passive | [E] Enemy Intel | [B] Buff and Debuff | [I] Inventory | [0] End Turn");
         }
 
         // Method to handle menu inputs for inspecting skills, passives, enemy intel, and buffs/debuffs, allowing the player to view detailed information about their cards, passive effects, and the enemy's stats and abilities
@@ -440,7 +441,7 @@ namespace Slay_The_Prof.Controller
 
             switch (input)
             {
-                case "I":
+                case "C":
                     int pageSize = 7; // Number of skills to show at once
                     int currentPage = 0;
                     bool viewingSkills = true;
@@ -533,6 +534,75 @@ namespace Slay_The_Prof.Controller
                     Console.ReadKey();
                     break;
                 case "B":
+                    break;
+                case "I":
+
+                    List<ItemModel> items = player.ItemModel;
+                    bool usingInventory = true;
+                    while(usingInventory)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("=== ITEM INVENTORY ===");
+
+                        if (player.ItemModel.Count == 0)
+                        { 
+                            Console.WriteLine("You have no item in your inventory");
+                            Console.Write("Press any key to go back...");
+                            Console.ReadKey();
+                            usingInventory = false;
+                        }
+                        else
+                        {
+                           for (int i = 0; i < items.Count; i++)
+                            {
+                                Console.WriteLine($"    [{i + 1}] {items[i].ItemName} ({items[i].Quantity})");
+                            }
+                            Console.WriteLine("-------------------------------------------------");
+                            Console.WriteLine("[I] Item Description | [B] Back to Battle");
+                            Console.WriteLine("Choice: ");
+                            string userInput = Console.ReadLine()!.ToUpper();
+
+                            if (int.TryParse(userInput, out int choice) && choice >= 1 && choice <= 3)
+                            {
+
+                                ItemModel selected = items[choice - 1];
+
+                                BattleController.UseItemToPlayer(selected, player);
+
+                                if (selected.Quantity > 1)
+                                {
+                                    selected.Quantity -= 1;
+                                }
+                                else
+                                    items.Remove(selected);
+
+                                Console.ForegroundColor = ConsoleColor.Cyan;
+                                Slay_The_Prof.Service.DatabaseService.SavePlayerData(player);
+                                Console.ResetColor();
+                                Console.WriteLine("\nInventory is updated!");
+                                TextMoveInUIController.BottomRightPromptContinue();
+                            }
+
+                            else if(userInput == "I")
+                            {
+                                Console.Clear();
+                                Console.WriteLine("--- ITEM DETAILS ---");
+                                foreach (var item in items)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Yellow;
+                                    Console.WriteLine($"* {item.ItemName} ({item.Quantity})");
+                                    Console.ResetColor();
+                                    Console.WriteLine($"  {item.Description}");
+                                }
+                                Console.Write("Press any key to go back...");
+                                Console.ReadKey();
+                            }
+                            else if (userInput == "B")
+                            {
+                                usingInventory = false;
+                            }
+                        }
+                    }                  
                     break;
                 default:
                     break;

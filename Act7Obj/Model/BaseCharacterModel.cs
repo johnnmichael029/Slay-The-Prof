@@ -1,4 +1,5 @@
 ﻿using Slay_The_Prof.Controller;
+using Slay_The_Prof.Model.Items;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,8 +27,11 @@ namespace Slay_The_Prof.Model
         public List<string> PassiveDescriptions { get; set; } = new List<string>();
 
         // Status Effects
-        public List<StatusEffectModel> ActiveEffects { get; set; } = new List<StatusEffectModel>();
-        public List<PassiveEffectModel> PassiveEffects { get; set; } = new List<PassiveEffectModel>();
+        public List<StatusEffectModel> ActiveEffects { get; set; } = [];
+        public List<PassiveEffectModel> PassiveEffects { get; set; } = [];
+
+        // Items
+
 
 
 

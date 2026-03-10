@@ -17,5 +17,6 @@ namespace Slay_The_Prof.Model
         public int Armor {  get; set; }
         public int DrawAmount { get; set; }
         public int AttackCount { get; set; }
+        public int CardPrice { get; set; }
     }
 }

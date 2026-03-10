@@ -3,6 +3,7 @@ using Act7Obj.Model;
 using Slay_The_Prof.Model;
 using Slay_The_Prof.Model.BuffAndDebuffModel.Buff;
 using Slay_The_Prof.Model.BuffAndDebuffModel.Debuff;
+using Slay_The_Prof.Model.Items;
 using Slay_The_Prof.Service;
 using Slay_The_Prof.View;
 using System;
@@ -25,7 +26,7 @@ namespace Slay_The_Prof.Controller
                 enemy.PassiveEffects.Add(new Trinitarian());
         }
 
-        // Tbis code Apply effects for cards
+        // This code Apply effects for cards
         public static void ApplyCardEffect(CardModel card, Player player, Enemy enemy, bool isPlayerCaster = true)
         {
 
@@ -393,6 +394,76 @@ namespace Slay_The_Prof.Controller
             Console.WriteLine("\nReturning to campus (Main Menu)...");
             Console.ReadKey();
         }
-       
+
+        // This method is called when the player uses an item during battle. It applies the item's effect to the player and updates their stats accordingly.
+        public static void UseItemToPlayer(ItemModel selected, Player player)
+        {
+            if (selected == null || selected.ItemEffect == null) return;
+
+            foreach(var effect in selected.ItemEffect)
+            { 
+                var itemEffect = CreateEffectByName(effect, selected.Duration);
+
+                switch (effect) 
+                {
+                    case "Max Health":
+                        player.MaxHealth += selected.EffectValue;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"You used {selected.ItemName} and increases Max Health {selected.EffectValue}");
+                        Console.ResetColor();
+                        break;
+                    case "Heal":
+                        player.Health += selected.EffectValue;
+                        if (player.Health > player.MaxHealth) player.Health = player.MaxHealth; // Prevent overheal
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"You used {selected.ItemName} and healed for {selected.EffectValue} HP!");
+                        Console.ResetColor();
+                        break;
+                    case "Armor":
+
+                    case "Attack Boost":                      
+                        if (selected.EffectType == "Buff")
+                        {
+                             player.ActiveEffects.Add(itemEffect);
+                        }
+                        Console.ForegroundColor = itemEffect.EffectType == "Buff" ? ConsoleColor.Green : ConsoleColor.Red;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"You used {selected.ItemName} and gained {effect}");
+                        Console.ResetColor();                   
+                        break;
+                    case "Energy Restore":
+                        // This is just a placeholder. You would need to implement an energy system for this to work.
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"You used {selected.ItemName} and restored {selected.EffectValue} Energy!");
+                        Console.ResetColor();
+                        break; 
+                    case "Morale":
+                        if (selected.EffectType == "Buff")
+                        {
+                            player.ActiveEffects.Add(itemEffect);
+                        }
+                        Console.ForegroundColor = itemEffect.EffectType == "Buff" ? ConsoleColor.Green : ConsoleColor.Red;
+                        Console.WriteLine($"You used {selected.ItemName} and gained {effect}");
+                        Console.ResetColor();
+                        break;
+
+                    case "Cleanse":
+                        //var debuffCount = player.ActiveEffects.Count(e => e.EffectType == "Debuff");                       
+                        player.ActiveEffects.Clear();
+                        Console.WriteLine("All debuffs removed!");
+                        break;
+                }
+
+            }
+
+            //if (selected.ItemEffect == "Heal")
+            //{
+            //    player.Health += selected.EffectValue;
+            //    if (player.Health > player.MaxHealth) player.Health = player.MaxHealth; // Prevent overheal
+            //    Console.ForegroundColor = ConsoleColor.Green;
+            //    Console.WriteLine($"You used {selected.ItemName} and healed for {selected.EffectValue} HP!");
+            //    Console.ResetColor();
+            //}
+        }
     }
 }

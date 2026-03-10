@@ -41,6 +41,8 @@ namespace Slay_The_Prof.Controller
 
                     if (loadedPlayer != null)
                     {
+                        loadedPlayer.ItemModel = DatabaseService.LoadPlayerItems(loadedPlayer.PlayerID);
+
                         // 1. Properly instantiate the specific Hero class to get the Cards
                         PlayerCharacterModel baseHero = loadedPlayer.CharacterType switch
                         {

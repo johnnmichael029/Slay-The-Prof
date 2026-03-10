@@ -15,6 +15,7 @@ namespace Act7Obj.View
         {
             DatabaseService.InitializePlayerDataTable();
             DatabaseService.InitializeEnemyDataTable();
+            DatabaseService.InitializePlayerItemDataTable();
             AddEnemyController.SeedEnemies();
 
             ConsoleInterface.DisplayWelcomeMessage();

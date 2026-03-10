@@ -24,6 +24,7 @@ namespace Slay_The_Prof.Controller
             // Note: BattleLoop calls DrawCards(4) inside it, so you don't need to call it here.
             StagesControlling.FirstStagesBattle(currentPlayer, boss, deck);
         }
+
         public static void InitializeStrangeManAndCards(Player currentPlayer)
         {
             Console.Clear();

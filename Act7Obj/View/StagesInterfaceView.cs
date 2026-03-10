@@ -1,6 +1,7 @@
 ﻿using Act7Obj.Controller;
 using Act7Obj.Model;
 using Slay_The_Prof.Controller;
+using Slay_The_Prof.Controller.TraderController;
 using Slay_The_Prof.Model;
 using Slay_The_Prof.Model.EnemyModel;
 using Slay_The_Prof.Service;
@@ -21,7 +22,7 @@ namespace Slay_The_Prof.View
                 string action = PlayerGameStoryView.CantindogsStory();
                 switch (action)
                 {
-                    case "1": 
+                    case "1":
                         // Fight
                         InitializeEnemyBeforeBattleAndCard.InitializeCatindogsAndCards(currentPlayer);
                         return;
@@ -35,7 +36,7 @@ namespace Slay_The_Prof.View
                             Console.Clear();
                             int damage = (int)(currentPlayer.MaxHealth * 0.15);
                             currentPlayer.Health -= damage;
-                            currentPlayer.ClassBattle +=1;
+                            currentPlayer.ClassBattle += 1;
 
                             // Ensure health doesn't drop below 0
                             if (currentPlayer.Health < 0) currentPlayer.Health = 0;
@@ -90,7 +91,7 @@ namespace Slay_The_Prof.View
 
                     case "2": // Escape
                         bool escapeResult = RNGController.RollDiceForPlayerEscape(currentPlayer);
-                        
+
                         if (escapeResult)
                         {
                             currentPlayer.ClassBattle += 1;
@@ -115,8 +116,8 @@ namespace Slay_The_Prof.View
                         Console.ReadKey();
                         break;
                 }
-            }           
-         }
+            }
+        }
 
         public static void ShowStage1Battle2Interface(Player currentPlayer)
         {
@@ -150,6 +151,32 @@ namespace Slay_The_Prof.View
                         TextMoveInUIController.CenterText("Returning to Main Menu...");
                         return;
 
+                    default:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid choice. Press any key...");
+                        Console.ResetColor();
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }
+
+        public static void ShowClassBreak1Interface(Player currentPlayer)
+        {
+            bool validChoice = true;
+            while (validChoice)
+            {
+                string action = PlayerGameStoryView.ClassBreak1();
+                switch (action)
+                {
+                    case "1": // Buy Items
+                        BuyItemController.GiveBuyItems(currentPlayer);
+                        break;
+                    case "2": // Skip
+                        return;
+                    case "4": // Return to Main Menu
+                        TextMoveInUIController.CenterText("Returning to Main Menu...");
+                        return;
                     default:
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Invalid choice. Press any key...");

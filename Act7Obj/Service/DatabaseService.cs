@@ -1,9 +1,11 @@
 ﻿using Act7Obj.Model;
 using Microsoft.Data.Sqlite;
 using Slay_The_Prof.Model;
+using Slay_The_Prof.Model.Items;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Transactions;
 
 namespace Slay_The_Prof.Service
 {
@@ -60,6 +62,78 @@ namespace Slay_The_Prof.Service
             );";
             cmd3.ExecuteNonQuery();
         }
+
+        public static void InitializePlayerItemDataTable()
+        {
+            using var connection = new SqliteConnection("Data Source=SlayTheProf.db");
+            connection.Open();
+            var command = connection.CreateCommand();
+            command.CommandText = @"
+            CREATE TABLE IF NOT EXISTS PlayerItems (
+                ItemID INTEGER PRIMARY KEY AUTOINCREMENT,
+                OwnerID INTEGER,
+                ItemName TEXT NOT NULL,
+                ItemDescription TEXT,
+                ItemEffect TEXT,
+                ItemPrice INTEGER,
+                EffectValue INTEGER,
+                Duration INTEGER,
+                Quantity INTEGER,
+                EffectType TEXT,
+                FOREIGN KEY(OwnerID) REFERENCES PlayerData(PlayerID) ON DELETE CASCADE
+            );";
+            command.ExecuteNonQuery();
+        }
+
+        public static void SavePlayerItemData(long ownerId, Player player, SqliteConnection connection)
+        {
+            // Start a transaction to make this "one separate thing"
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                // 1. Clear existing items for this player
+                using var deleteCmd = connection.CreateCommand();
+                deleteCmd.Transaction = transaction; // Attach to transaction
+                deleteCmd.CommandText = "DELETE FROM PlayerItems WHERE OwnerID = $ownerId";
+                deleteCmd.Parameters.AddWithValue("$ownerId", ownerId);
+                deleteCmd.ExecuteNonQuery();
+
+                // 2. Prepare the Insert Command ONCE (Optimization)
+                using var insertCmd = connection.CreateCommand();
+                insertCmd.Transaction = transaction;
+                insertCmd.CommandText = @"
+                INSERT INTO PlayerItems (
+                OwnerID, ItemName, ItemDescription, ItemEffect, ItemPrice, EffectValue, Quantity
+                ) 
+                VALUES (
+                    $ownerId, $itemName, $itemDescription, $itemEffect, $itemPrice, $effectValue, $quantity
+                )";
+                foreach (var item in player.ItemModel)
+                {
+                    insertCmd.Parameters.Clear();
+                    insertCmd.Parameters.AddWithValue("$ownerId", ownerId);
+                    insertCmd.Parameters.AddWithValue("$itemName", item.ItemName);
+                    insertCmd.Parameters.AddWithValue("$itemDescription", item.Description ?? "");
+                    // Use Join for your List<string> to avoid the Mapping error
+                    insertCmd.Parameters.AddWithValue("$itemEffect", string.Join(",", item.ItemEffect));
+                    insertCmd.Parameters.AddWithValue("$itemPrice", item.ItemPrice);
+                    insertCmd.Parameters.AddWithValue("$effectValue", item.EffectValue);
+                    insertCmd.Parameters.AddWithValue("$quantity", item.Quantity);
+                    insertCmd.ExecuteNonQuery();
+                }
+
+                // Finalize the changes
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                // If anything fails, undo everything so the old data remains safe
+                transaction.Rollback();
+                Console.WriteLine("Error saving items: " + ex.Message);
+            }
+        }
+
         public static void SavePlayerData(Player player)
         {
             using var connection = new SqliteConnection("Data Source=SlayTheProf.db");
@@ -67,8 +141,6 @@ namespace Slay_The_Prof.Service
 
             using var command = connection.CreateCommand();
 
-            // Use NULL for PlayerID if it's a new player (ID 0) to trigger Auto-Increment
-            string idValue = player.PlayerID == 0 ? "NULL" : "$playerId";
 
             command.CommandText = $@"
             INSERT OR REPLACE INTO PlayerData (
@@ -78,18 +150,17 @@ namespace Slay_The_Prof.Service
                 CritDamage, Intelect, Speed, CurrentStage, ClassBattle
             )
             VALUES (
-                {idValue}, $playerName, $playerLevel, $currentExp, $playerGold, 
+                $playerId, $playerName, $playerLevel, $currentExp, $playerGold, 
                 $characterName, $characterDescription, $characterType, 
                 $currentHealth, $maxHealth, $attackDamage, $critChance, 
                 $critDamage, $intelect, $speed, $currentStage, $classBattle
             );";
 
-            if (player.PlayerID != 0)
-            {
+            if (player.PlayerID == 0)
+                command.Parameters.AddWithValue("$playerId", DBNull.Value);
+            else
                 command.Parameters.AddWithValue("$playerId", player.PlayerID);
-            }
 
-            command.Parameters.AddWithValue("$playerId", player.PlayerID);
             command.Parameters.AddWithValue("$playerName", player.PlayerName);
             command.Parameters.AddWithValue("$playerLevel", player.PlayerLevel);
             command.Parameters.AddWithValue("$currentExp", player.CurrentExp);
@@ -117,7 +188,9 @@ namespace Slay_The_Prof.Service
 
             SaveSkills(newPlayerId, player, connection);
             SavePassives(newPlayerId, player, connection);
+            SavePlayerItemData(newPlayerId, player, connection);
         }
+
         private static void SaveSkills(long ownerId, Player player, SqliteConnection connection)
         {
             // Clear only the skills belonging to THIS specific ID
@@ -137,6 +210,7 @@ namespace Slay_The_Prof.Service
                 skillCmd.ExecuteNonQuery();
             }
         }
+
         private static void SavePassives(long ownerId, Player player, SqliteConnection connection)
         {
             // 1. Clear existing buffs for this specific ID
@@ -160,6 +234,7 @@ namespace Slay_The_Prof.Service
                 passiveCmd.ExecuteNonQuery();
             }
         }
+
         public static void InitializeEnemyDataTable()
         {
             using var connection = new SqliteConnection("Data Source=SlayTheProf.db");
@@ -206,6 +281,7 @@ namespace Slay_The_Prof.Service
             );";
             cmd3.ExecuteNonQuery();
         }
+
         public static void SaveEnemyData(Enemy enemy)
         {
             using var connection = new SqliteConnection("Data Source=SlayTheProf.db");
@@ -239,6 +315,7 @@ namespace Slay_The_Prof.Service
             SaveEnemySkills(newEnemyId, enemy, connection);
             SaveEnemyPassives(newEnemyId, enemy, connection);
         }
+
         private static void SaveEnemySkills(long ownerId, Enemy enemy, SqliteConnection connection)
         {
             // Clear old skills for this owner
@@ -270,6 +347,7 @@ namespace Slay_The_Prof.Service
                 skillCmd.ExecuteNonQuery();
             }
         }
+
         private static void SaveEnemyPassives(long ownerId, Enemy enemy, SqliteConnection connection)
         {
             // 1. Clear existing buffs for this specific ID
@@ -293,6 +371,7 @@ namespace Slay_The_Prof.Service
                 passiveCmd.ExecuteNonQuery();
             }
         }
+
         public static bool CheckIfPlayerExists(string playerName)
         {
             using var connection = new SqliteConnection("Data Source=SlayTheProf.db");
@@ -305,6 +384,7 @@ namespace Slay_The_Prof.Service
             return count > 0;
 
         }
+
         public static List<string> GetAllSavedPlayerNames()
         {
             List<string> names = new List<string>();
@@ -321,6 +401,7 @@ namespace Slay_The_Prof.Service
             }
             return names;
         }
+
         public static Player? LoadPlayerData(string playerName)
         {
             using var connection = new SqliteConnection("Data Source=SlayTheProf.db");
@@ -335,6 +416,7 @@ namespace Slay_The_Prof.Service
             {
                 var player = new Player
                 {
+                    PlayerID = (int)reader.GetInt64(reader.GetOrdinal("PlayerID")),
                     PlayerName = reader.GetString(reader.GetOrdinal("PlayerName")),
                     PlayerLevel = reader.GetInt32(reader.GetOrdinal("PlayerLevel")),
                     CurrentExp = reader.GetInt32(reader.GetOrdinal("CurrentExp")),
@@ -359,6 +441,52 @@ namespace Slay_The_Prof.Service
             }
             return null;
         }
+
+        public static List<ItemModel> LoadPlayerItems(long ownerId)
+        {
+            List<ItemModel> loadedItems = new List<ItemModel>();
+            using var connection = new SqliteConnection("Data Source=SlayTheProf.db");
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT * FROM PlayerItems WHERE OwnerID = $ownerId";
+            command.Parameters.AddWithValue("$ownerId", ownerId);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                // Get column positions once for speed and safety
+                int nameIdx = reader.GetOrdinal("ItemName");
+                int descIdx = reader.GetOrdinal("ItemDescription");
+                int effIdx = reader.GetOrdinal("ItemEffect");
+                int priceIdx = reader.GetOrdinal("ItemPrice");
+                int valIdx = reader.GetOrdinal("EffectValue");
+                int durIdx = reader.GetOrdinal("Duration");
+                int qtyIdx = reader.GetOrdinal("Quantity");
+                int typeIdx = reader.GetOrdinal("EffectType");
+
+                loadedItems.Add(new ItemModel
+                {
+                    ItemName = reader.IsDBNull(nameIdx) ? "" : reader.GetString(nameIdx),
+                    Description = reader.IsDBNull(descIdx) ? "" : reader.GetString(descIdx),
+
+                    // Reconstruct the list safely
+                    ItemEffect = reader.IsDBNull(effIdx) ? new List<string>() :
+                                 reader.GetString(effIdx).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(),
+
+                    ItemPrice = reader.IsDBNull(priceIdx) ? 0 : reader.GetInt32(priceIdx),
+                    EffectValue = reader.IsDBNull(valIdx) ? 0 : reader.GetInt32(valIdx),
+                    Duration = reader.IsDBNull(durIdx) ? 0 : reader.GetInt32(durIdx),
+
+                    // FIX: This ternary operator replaces your 'if' statement
+                    Quantity = reader.IsDBNull(qtyIdx) ? 1 : reader.GetInt32(qtyIdx),
+
+                    EffectType = reader.IsDBNull(typeIdx) ? "None" : reader.GetString(typeIdx)
+                });
+            }
+            return loadedItems;
+        }
+
         private static void LoadSkillsAndPassives(long playerId, Player player, SqliteConnection connection)
         {
             // Load Skills
@@ -383,6 +511,7 @@ namespace Slay_The_Prof.Service
                 player.PassiveDescriptions.Add(pReader.GetString(1));
             }
         }
+
         public static void DeletePlayerData(String playerName)
         {
             using var connection = new SqliteConnection("Data Source=SlayTheProf.db");

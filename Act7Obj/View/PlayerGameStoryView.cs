@@ -43,11 +43,6 @@ namespace Slay_The_Prof.View
             return action;
         }
 
-        public static void ClassBreak()
-        {
-
-        }
-
         public static string StrangeEncounter()
         {
             Console.Clear();
@@ -78,6 +73,7 @@ namespace Slay_The_Prof.View
 
             return action;
         }
+
         public static string StrangeEncounterMessage()
         {
             Console.Clear();
@@ -104,6 +100,7 @@ namespace Slay_The_Prof.View
 
             return action;
         }
+
         public static void StrangeEncounterHappy()
         {
             Console.Clear();
@@ -154,6 +151,7 @@ namespace Slay_The_Prof.View
 
             return action;
         }
+
         public static void TrinityMessage()
         {
             Console.Clear();
@@ -170,6 +168,42 @@ namespace Slay_The_Prof.View
             TextMoveInUIController.CenterText("You realy think you can't fight me?");
             TextMoveInUIController.BottomRightPromptContinue();
 
+        }
+
+        public static string ClassBreak1()
+        {
+            Console.Clear();
+            // Header for Stage 1
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            TextMoveInUIController.CenterText("╔══════════════════════════════════════════╗");
+            TextMoveInUIController.CenterText("║               CLASS BREAK                ║");
+            TextMoveInUIController.CenterText("╚══════════════════════════════════════════╝");
+            Console.ResetColor();
+            TextMoveInUIController.CenterText("Class Break 1");
+            Console.WriteLine("\n");
+
+            // Story Text
+            TextMoveInUIController.CenterText("Player is hungry and wants something to eat.");
+            TextMoveInUIController.CenterText("As he walk, Trader Yamashii sees him.");
+            Console.WriteLine("\n");
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            TextMoveInUIController.CenterText("YAMASHII: You look very exhuasted, want something to eat?");
+            Console.ResetColor();
+            Console.WriteLine("\n");
+            Console.WriteLine("\n" + new string('─', Console.WindowWidth));
+
+            Console.WriteLine("What will you do?\n");
+            Console.WriteLine("   [1] Buy Items (Gusto ko pastil with Egg)");
+            Console.WriteLine("   [2] Buy Cards ");
+            Console.WriteLine("   [3] Skip (Wala me pera)");
+            Console.WriteLine("   [4] Return to Main Menu");
+            Console.WriteLine();
+
+            Console.Write("Your Action: ");
+            string action = Console.ReadLine()!;
+
+            return action;
         }
     }
 }

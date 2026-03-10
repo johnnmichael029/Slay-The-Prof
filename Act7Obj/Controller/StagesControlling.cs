@@ -37,7 +37,14 @@ namespace Slay_The_Prof.Controller
             if (isPlayerWon)
             {
                 TextMoveInUIController.BottomRightPromptContinue();
+                ClassBreak1(player);
             }
+        }
+
+        public static void ClassBreak1(Player player)
+        {
+            StagesInterfaceView.ShowClassBreak1Interface(player);
+            TextMoveInUIController.BottomRightPromptContinue();
         }
     }
 }
