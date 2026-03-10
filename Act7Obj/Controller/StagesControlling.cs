@@ -1,6 +1,7 @@
 ﻿using Act7Obj.Controller;
 using Act7Obj.Model;
 using Slay_The_Prof.Model;
+using Slay_The_Prof.Service;
 using Slay_The_Prof.View;
 using System;
 using System.Collections.Generic;
@@ -36,6 +37,8 @@ namespace Slay_The_Prof.Controller
             bool isPlayerWon = FirstSemController.TrinityBattle2(player, enemy, deck);
             if (isPlayerWon)
             {
+                player.ClassBreak += 1;
+                DatabaseService.SavePlayerData(player);
                 TextMoveInUIController.BottomRightPromptContinue();
                 ClassBreak1(player);
             }

@@ -121,6 +121,7 @@ namespace Slay_The_Prof.View
 
         public static void ShowStage1Battle2Interface(Player currentPlayer)
         {
+
             bool validChoice = true;
             while (validChoice)
             {
@@ -161,6 +162,16 @@ namespace Slay_The_Prof.View
             }
         }
 
+        public static void ShowStage1Battle3Interface(Player currentPlayer)
+        {
+            if (currentPlayer.ClassBreak == 1)
+            {
+                StagesControlling.ClassBreak1(currentPlayer);
+                return;
+            }
+            Console.WriteLine("end of program...");
+        }
+
         public static void ShowClassBreak1Interface(Player currentPlayer)
         {
             bool validChoice = true;
@@ -173,6 +184,11 @@ namespace Slay_The_Prof.View
                         BuyItemController.GiveBuyItems(currentPlayer);
                         break;
                     case "2": // Skip
+                        return;
+                    case "3": // Skip
+                        currentPlayer.ClassBreak += 1;
+                        DatabaseService.SavePlayerData(currentPlayer);
+                        ShowStage1Battle3Interface(currentPlayer);
                         return;
                     case "4": // Return to Main Menu
                         TextMoveInUIController.CenterText("Returning to Main Menu...");

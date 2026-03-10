@@ -24,9 +24,10 @@ namespace Slay_The_Prof.Service
                 PlayerName TEXT NOT NULL UNIQUE,
                 PlayerLevel INTEGER,
                 PlayerGold INTEGER,
-                PlayerEnergy INTEGER DEFAULT 3,
+                PlayerEnergy INTEGER,
                 CurrentStage INTEGER DEFAULT 0,
                 ClassBattle INTEGER DEFAULT 0,
+                ClassBreak INTEGER DEFAULT 0,
                 CurrentExp INTEGER DEFAULT 0,
                 CharacterName TEXT,
                 CharacterDescription TEXT,
@@ -148,13 +149,13 @@ namespace Slay_The_Prof.Service
                 PlayerID, PlayerName, PlayerLevel, CurrentExp, PlayerGold, 
                 CharacterName, CharacterDescription, CharacterType, 
                 CurrentHealth, MaxHealth, AttackDamage, CritChance, 
-                CritDamage, Intelect, Speed, CurrentStage, ClassBattle, PlayerEnergy
+                CritDamage, Intelect, Speed, CurrentStage, ClassBattle, PlayerEnergy, ClassBreak
             )
             VALUES (
                 $playerId, $playerName, $playerLevel, $currentExp, $playerGold, 
                 $characterName, $characterDescription, $characterType, 
                 $currentHealth, $maxHealth, $attackDamage, $critChance, 
-                $critDamage, $intelect, $speed, $currentStage, $classBattle, $playerEnergy
+                $critDamage, $intelect, $speed, $currentStage, $classBattle, $playerEnergy, $classBreak
             );";
 
             if (player.PlayerID == 0)
@@ -179,6 +180,7 @@ namespace Slay_The_Prof.Service
             command.Parameters.AddWithValue("$currentStage", player.CurrentStage);
             command.Parameters.AddWithValue("$classBattle", player.ClassBattle);
             command.Parameters.AddWithValue("$playerEnergy", player.PlayerEnergy);
+            command.Parameters.AddWithValue("$classBreak", player.ClassBreak);
 
 
             // FIX: Execute only ONCE to prevent the crash in image_e43a83
@@ -436,7 +438,8 @@ namespace Slay_The_Prof.Service
                     Speed = reader.GetInt32(reader.GetOrdinal("Speed")),
                     CurrentStage = reader.GetInt32(reader.GetOrdinal("CurrentStage")),
                     ClassBattle = reader.GetInt32(reader.GetOrdinal("ClassBattle")),
-                    PlayerEnergy = reader.GetInt32(reader.GetOrdinal("PlayerEnergy"))
+                    PlayerEnergy = reader.GetInt32(reader.GetOrdinal("PlayerEnergy")),
+                    ClassBreak = reader.GetInt32(reader.GetOrdinal("ClassBreak"))
                 };
 
                 long playerId = reader.GetInt64(reader.GetOrdinal("PlayerID"));
