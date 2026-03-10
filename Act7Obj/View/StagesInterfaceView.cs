@@ -182,7 +182,7 @@ namespace Slay_The_Prof.View
                 {
                     case "1": // Buy Items
                         BuyItemController.GiveBuyItems(currentPlayer);
-                        break;
+                        return;
                     case "2": // Skip
                         return;
                     case "3": // Skip

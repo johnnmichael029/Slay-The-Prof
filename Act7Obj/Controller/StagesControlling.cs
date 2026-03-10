@@ -49,5 +49,6 @@ namespace Slay_The_Prof.Controller
             StagesInterfaceView.ShowClassBreak1Interface(player);
             TextMoveInUIController.BottomRightPromptContinue();
         }
+
     }
 }
